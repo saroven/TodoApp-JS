@@ -48,6 +48,7 @@ function deleteCheck(e) {
     //animation
     todo.classList.add("fall");
     removeTodos(todo);
+    checkCompleted(todo);
     todo.addEventListener("transitionend", function () {
       todo.remove();
     });
@@ -56,6 +57,7 @@ function deleteCheck(e) {
   if (item.classList[0] === "complete-btn") {
     const todo = item.parentElement;
     todo.classList.toggle("completed");
+    checkCompleted(todo);
   }
 }
 function filterTodo(e) {
@@ -96,16 +98,30 @@ function saveLocalTodos(todo) {
 }
 
 function getTodos() {
-  console.log("hello");
+  //get todos
   if (localStorage.getItem("todos") === null) {
     todos = [];
   } else {
     todos = JSON.parse(localStorage.getItem("todos"));
   }
+  //get completed todos
+  let complete;
+  if (localStorage.getItem("completed") === null) {
+    complete = [];
+  } else {
+    complete = JSON.parse(localStorage.getItem("completed"));
+  }
+
   todos.forEach(function (todo) {
     //todo Div
     const todoDiv = document.createElement("div");
     todoDiv.classList.add("todo");
+    //if it retutn !== -1 then conditon is true
+    //this means we have data in completedList
+    if (complete.indexOf(todo) !== -1) {
+      todoDiv.classList.add("completed");
+      console.log(todoDiv);
+    }
     //create li
     const newTodo = document.createElement("li");
     newTodo.innerText = todo;
@@ -136,4 +152,25 @@ function removeTodos(todo) {
   const todoIndex = todo.children[0].innerText;
   todos.splice(todos.indexOf(todoIndex), 1);
   localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function checkCompleted(todo) {
+  const todoIndex = todo.children[0].innerText;
+  var completed = localStorage.getItem("completed");
+  const array = JSON.parse(completed) || [];
+
+  if (array.indexOf(todoIndex) == -1) {
+    array.push(todoIndex);
+    const data = JSON.stringify(array);
+    localStorage.setItem("completed", data);
+  } else {
+    //remove item from completed
+    if (completed === null) {
+      completed = [];
+    } else {
+      completed = JSON.parse(completed);
+    }
+    completed.splice(completed.indexOf(todoIndex), 1);
+    localStorage.setItem("completed", JSON.stringify(completed));
+  }
 }
