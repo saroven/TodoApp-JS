@@ -48,7 +48,9 @@ function deleteCheck(e) {
     //animation
     todo.classList.add("fall");
     removeTodos(todo);
-    checkCompleted(todo);
+    //this is for removing completed item
+    removeCompleted(todo);
+
     todo.addEventListener("transitionend", function () {
       todo.remove();
     });
@@ -57,6 +59,7 @@ function deleteCheck(e) {
   if (item.classList[0] === "complete-btn") {
     const todo = item.parentElement;
     todo.classList.toggle("completed");
+    //this is for adding completed item
     checkCompleted(todo);
   }
 }
@@ -120,7 +123,6 @@ function getTodos() {
     //this means we have data in completedList
     if (complete.indexOf(todo) !== -1) {
       todoDiv.classList.add("completed");
-      console.log(todoDiv);
     }
     //create li
     const newTodo = document.createElement("li");
@@ -164,6 +166,23 @@ function checkCompleted(todo) {
     const data = JSON.stringify(array);
     localStorage.setItem("completed", data);
   } else {
+    //remove item from completed
+    if (completed === null) {
+      completed = [];
+    } else {
+      completed = JSON.parse(completed);
+    }
+    completed.splice(completed.indexOf(todoIndex), 1);
+    localStorage.setItem("completed", JSON.stringify(completed));
+  }
+}
+
+function removeCompleted(todo) {
+  const todoIndex = todo.children[0].innerText;
+  var completed = localStorage.getItem("completed");
+  const array = JSON.parse(completed) || [];
+
+  if (array.indexOf(todoIndex) !== -1) {
     //remove item from completed
     if (completed === null) {
       completed = [];
